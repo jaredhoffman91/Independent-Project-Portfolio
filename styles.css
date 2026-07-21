@@ -1,0 +1,122 @@
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+  --bg: #FFFFFF;
+  --ink: #0A0A0A;
+  --ink-soft: #4A4A4A;
+  --accent: #1B4D3E;
+  --accent-bright: #2F6E4E;
+  --tint: #EEF3EF;
+  --tint-deep: #DCE6DF;
+  --border: #DADFDC;
+  --white: #FFFFFF;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0; }
+
+.mono { font-family: var(--font-mono); }
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+nav.site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+nav.site-nav .brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+nav.site-nav .links { display: flex; gap: 28px; font-size: 14px; }
+nav.site-nav .links a { text-decoration: none; color: var(--ink-soft); }
+nav.site-nav .links a:hover { color: var(--ink); }
+
+footer {
+  border-top: 1px solid var(--border);
+  margin-top: 96px;
+  padding: 40px 32px 64px;
+}
+footer .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+footer a { color: var(--ink-soft); }
+
+/* ============================================================
+   Buttons / pills
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  transition: background .15s ease, color .15s ease;
+}
+.btn.primary { background: var(--ink); color: var(--white); }
+.btn.primary:hover { background: #16324f; }
+.btn.secondary { background: transparent; color: var(--ink); }
+.btn.secondary:hover { background: var(--tint); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .wrap, nav.site-nav { padding-left: 20px; padding-right: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

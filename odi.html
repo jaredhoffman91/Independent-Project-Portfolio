@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Organizational Development Index — Jared Hoffman</title>
+<meta name="description" content="An original metric measuring how efficiently NHL organizations convert drafted players into NHL value.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+
+  /* ---------- Hero ---------- */
+  .odi-hero { padding: 72px 0 56px; border-bottom: 1px solid var(--border); }
+  .odi-hero h1 {
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 760px;
+    margin-top: 16px;
+  }
+  .odi-hero p.lede { max-width: 620px; font-size: 18px; color: var(--ink-soft); margin-top: 20px; }
+  .odi-hero .cta-row { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+
+  /* ---------- Draft board ---------- */
+  .board-section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+  .board-section h2 { font-size: 28px; letter-spacing: -0.01em; }
+  .board-section .sub { color: var(--ink-soft); margin-top: 8px; max-width: 640px; font-size: 15px; }
+
+  .board { margin-top: 40px; }
+  .board-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 90px;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  .board-row:last-child { border-bottom: 1px solid var(--border); }
+  .board-row .pick {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .board-row .pick .num { font-size: 20px; color: var(--ink); font-weight: 600; display: block; }
+  .board-row .team-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .board-row .team-name { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .board-row .bar-track { height: 8px; background: var(--tint); border-radius: 2px; overflow: hidden; }
+  .board-row .bar-fill { height: 100%; background: var(--ink); border-radius: 2px; }
+  .board-row:nth-child(-n+3) .bar-fill { background: var(--accent); }
+  .board-row .eff {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* ---------- How it works / toggle ---------- */
+  .how-section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+  .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 40px; }
+  .how-text p { color: var(--ink-soft); font-size: 15px; margin-top: 14px; }
+  .how-text strong { color: var(--ink); }
+
+  .toggle-card { background: var(--tint); border-radius: 8px; padding: 28px; }
+  .toggle-buttons { display: flex; gap: 8px; margin-bottom: 24px; }
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .toggle-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+  .toggle-example { display: flex; flex-direction: column; gap: 18px; }
+  .toggle-team-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .toggle-team-row .name { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
+  .toggle-team-row .val { font-family: var(--font-mono); font-size: 24px; font-weight: 600; }
+  .toggle-note { font-size: 13px; color: var(--ink-soft); margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  /* ---------- Full table ---------- */
+  .table-section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+  .table-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 16px; flex-wrap: wrap; }
+  .search-box {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    width: 240px;
+  }
+  table.odi-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+  table.odi-table th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--ink);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  table.odi-table th:hover { color: var(--ink); }
+  table.odi-table th.sorted::after { content: ' ↓'; }
+  table.odi-table th.sorted.asc::after { content: ' ↑'; }
+  table.odi-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+  }
+  table.odi-table td.team-cell { font-family: var(--font-body); font-weight: 500; }
+  table.odi-table tr:hover td { background: var(--tint); }
+  table.odi-table td.num { text-align: right; }
+  table.odi-table td.na { color: var(--border); text-align: right; }
+
+  /* ---------- Findings ---------- */
+  .findings-section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+  .finding {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+  }
+  .finding:last-child { border-bottom: 1px solid var(--border); }
+  .finding .tag { font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .finding h4 { font-family: var(--font-display); font-size: 19px; margin-top: 6px; }
+  .finding p { color: var(--ink-soft); font-size: 15px; margin-top: 10px; }
+
+  /* ---------- Limitations ---------- */
+  .limits-section { padding: 56px 0; }
+  .limits-section .box { background: var(--tint); border-radius: 8px; padding: 32px; }
+  .limits-section h3 { font-size: 18px; }
+  .limits-section p { color: var(--ink-soft); font-size: 14px; margin-top: 10px; }
+  .limits-section .links { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 720px) {
+    .how-grid { grid-template-columns: 1fr; gap: 32px; }
+    .finding { grid-template-columns: 1fr; gap: 8px; }
+    table.odi-table { font-size: 12px; }
+    table.odi-table th, table.odi-table td { padding: 8px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="brand">Jared Hoffman</a>
+  <div class="links">
+    <a href="index.html">← All Projects</a>
+  </div>
+</nav>
+
+<section class="odi-hero">
+  <div class="wrap">
+    <div class="eyebrow">NHL Draft Analytics · 2010–2020 · 2,300+ Players</div>
+    <h1>Which NHL organizations actually develop the players they draft?</h1>
+    <p class="lede">Reputation gets treated as evidence in hockey conversation constantly. The Organizational Development Index measures it instead: how much NHL value an organization's drafted players produce relative to what their draft position predicted, and how much of that value the organization actually kept versus lost through trades.</p>
+    <div class="cta-row">
+      <a href="ODI_Research_Paper.pdf" class="btn primary">Read the full paper</a>
+      <a href="ODI_Executive_Summary.pdf" class="btn secondary">2-page summary</a>
+      <a href="https://github.com/" class="btn secondary">View code on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="board-section">
+  <div class="wrap">
+    <h2>If organizations were drafted on development alone</h2>
+    <p class="sub">Ranked by ODI-Efficiency: NHL value produced per pick, relative to draft-position expectations, 8-year evaluation window. Top 10 shown.</p>
+    <div class="board" id="draft-board"></div>
+  </div>
+</section>
+
+<section class="how-section">
+  <div class="wrap">
+    <h2>Credit shouldn't outlive control</h2>
+    <div class="how-grid">
+      <div class="how-text">
+        <p>Most draft analysis credits a team forever for a player it drafted, even decades after a trade sends him elsewhere. That measures scouting, not development.</p>
+        <p><strong>Development Credit</strong> counts a player's full NHL value toward the team that drafted him, regardless of trades.</p>
+        <p><strong>In-Organization Credit</strong> only counts value produced while the player was actually on that team's roster.</p>
+        <p>The gap between the two tells you how much of a team's apparent success is actually happening somewhere else.</p>
+      </div>
+      <div class="toggle-card">
+        <div class="toggle-buttons">
+          <button class="toggle-btn active" data-mode="dev">Development Credit</button>
+          <button class="toggle-btn" data-mode="inorg">In-Organization Credit</button>
+        </div>
+        <div class="toggle-example" id="toggle-example"></div>
+        <div class="toggle-note" id="toggle-note"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="table-section">
+  <div class="wrap">
+    <h2>Full rankings, all 31 organizations</h2>
+    <p class="sub" style="color:var(--ink-soft); font-size:15px; margin-top:8px;">Click any column to sort. Search to jump to a specific team.</p>
+    <div class="table-controls">
+      <input type="text" class="search-box" id="team-search" placeholder="Search team...">
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="odi-table" id="odi-table">
+        <thead>
+          <tr>
+            <th data-key="rank">Rank</th>
+            <th data-key="team">Team</th>
+            <th data-key="efficiency8" class="sorted">ODI-Eff. (8yr)</th>
+            <th data-key="inorg8">In-Org (8yr)</th>
+            <th data-key="defense">Defense</th>
+            <th data-key="forward">Forward</th>
+            <th data-key="goalie">Goalie</th>
+            <th data-key="lateRound">Late Rd.</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="findings-section">
+  <div class="wrap">
+    <h2 style="font-size:28px;">What the data actually found</h2>
+
+    <div class="finding">
+      <div><span class="tag">Traded-Player Effect</span></div>
+      <div>
+        <h4>Nashville's ranking drops nearly 90% once trades are accounted for</h4>
+        <p>Nashville's Development Credit efficiency (1.9) collapses to 0.2 under In-Organization Credit, the largest shift in the dataset, driven largely by value produced after key trades.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div><span class="tag">Never Played A Game</span></div>
+      <div>
+        <h4>Filip Forsberg never played a single game for Washington</h4>
+        <p>Filip Forsberg was traded before ever playing a game for Washington. Their credit for him reflects a scouting decision, not development, since the organization never actually had the chance to develop him.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div><span class="tag">Signal vs. Noise</span></div>
+      <div>
+        <h4>Detroit's low rank is real. Vegas's isn't, yet.</h4>
+        <p>Detroit ranks near the bottom on the largest sample in the study (94 picks) — a real signal. Vegas ranks low too, but with only 20 picks from 3–4 draft classes as a 2017 expansion team, too small a sample to separate weakness from noise.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div><span class="tag">Diagnostic, Not Just A Ranking</span></div>
+      <div>
+        <h4>Chicago develops forwards well and defensemen poorly, in the same organization</h4>
+        <p>Forward efficiency of 3.46 sits next to a defense efficiency of -0.54, the worst defensive mark in the study. A single overall number would hide this. The positional breakdown doesn't.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="limits-section">
+  <div class="wrap">
+    <div class="box">
+      <h3>What this doesn't measure</h3>
+      <p>This model only tracks NHL-level games, so time spent developing in the AHL is invisible regardless of which organization is responsible for it. It can't fully separate scouting skill from development skill for a player who's never traded. Point Shares, the underlying value metric, underweights defensive contribution relative to offense, a known limitation of most public hockey statistics. Full limitations, methodology, and a complete data-cleaning log are in the paper.</p>
+      <div class="links">
+        <a href="ODI_Research_Paper.pdf#page=7" class="btn secondary">Read the full methodology</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Jared Hoffman</span>
+    <span><a href="https://www.linkedin.com/in/jared-hoffman-a68701314/">LinkedIn</a> · <a href="mailto:jarbhoff@iu.edu">jarbhoff@iu.edu</a></span>
+  </div>
+</footer>
+
+<script src="odi-data.js"></script>
+<script src="odi.js"></script>
+</body>
+</html>
